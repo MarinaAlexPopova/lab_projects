@@ -22,13 +22,18 @@ def find_biosamples_id(term):
     handle.close()
     id_bioproject = record["IdList"][0]
     handle = Entrez.elink(
-        dbfrom="bioproject", id=id_bioproject, linkname="bioproject_biosample"
-    )
+    dbfrom="bioproject", id=id_bioproject, linkname="bioproject_SRA")
     record = Entrez.read(handle)
     handle.close()
-    id_biosamples = []
+    sra = []
     for i in record[0]["LinkSetDb"][0]["Link"]:
-        id_biosamples.append(i["Id"])
+        sra.append(i["Id"])
+    id_biosamples = []
+    for i in sra:
+        handle = Entrez.elink(dbfrom="SRA", id=i, linkname="SRA_biosample")
+        record = Entrez.read(handle)
+        handle.close()
+        id_biosamples.append(record[0]['LinkSetDb'][0]['Link'][0]['Id'])
     return id_biosamples
 
 
